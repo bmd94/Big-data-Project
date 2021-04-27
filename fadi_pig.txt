@@ -1,0 +1,29 @@
+TWEET = LOAD '/user/TWEET' USING PigStorage(',') AS (index:int,context:chararray,date:chararray,id:long,is_media:float,is_retweet:float,no_likes:float,no_retweets:float,reply:chararray,text:chararray,user_name:chararray);
+A = LIMIT TWEET 10 ;
+DUMP A;
+
+RETWEET = LOAD '/user/RETWEET' USING PigStorage(',') AS (index:int,RT_id:long,context:chararray,rt_user:chararray,tw_id:long);
+A = LIMIT RETWEET 10 ;
+DUMP A;
+
+MENTIONS = LOAD '/user/MENTIONS' USING PigStorage(',') AS (index:int,context:chararray,mentions:chararray,tw_id:long);
+A = LIMIT RETWEET 10 ;
+DUMP A;
+
+DESCRIBE TWEET;
+DESCRIBE RETWEET;
+DESCRIBE MENTIONS;
+
+A = JOIN TWEET BY id, RETWEET BY tw_id;
+
+T_R = FOREACH A GENERATE $1,$10,$14;
+DESCRIBE T_M;
+
+B = JOIN TWEET BY id, MENTIONS BY tw_id;
+DESCRIBE B;
+
+T_M = FOREACH B GENERATE $1,$10,$13;
+DESCRIBE T_M;
+
+STORE T_M INTO '/user/T_M/' USING PigStorage (',');
+STORE T_R INTO '/user/T_R/' USING PigStorage (',');
